@@ -17,7 +17,7 @@ function App() {
     <Box sx={{ textAlign: "center" }}>
       <h1 style={{ width: "50%", margin: "7px auto" }}>SOCKET.IO</h1>
       {isJoinedRoom ? (
-        <ChatBox />
+        <ChatBox username={username} room={room} />
       ) : (
         <Box>
           <TextField

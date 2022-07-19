@@ -3,24 +3,27 @@ import { Box, Button, TextField } from "@mui/material";
 import socket from "../config/socket";
 import moment from "moment";
 
-function ChatBox() {
-  const [messages, setMessages] = useState([
-    {
-      username: "rochafi",
-      body: "Hello everyone",
+function ChatBox({ username, room }) {
+  const [messages, setMessages] = useState([]);
+  const [messageBody, setMessageBody] = useState("");
+
+  useEffect(() => {
+    socket.on("recieve-message", (message) => {
+      // data lama : messages,
+      // data baru : message
+      setMessages((oldMessages) => [...oldMessages, message]);
+    });
+  }, []);
+
+  const onSendMessage = () => {
+    const message = {
+      body: messageBody,
+      room,
+      username,
       time: moment().format("LT"),
-    },
-    {
-      username: "jordan",
-      body: "Hello guys",
-      time: moment().format("LT"),
-    },
-    {
-      username: "james",
-      body: "Holla",
-      time: moment().format("LT"),
-    },
-  ]);
+    };
+    socket.emit("send-message", message);
+  };
 
   return (
     <Box
@@ -33,7 +36,8 @@ function ChatBox() {
         height: 500,
       }}
     >
-      <div>
+      {/* Menampilkan pesan */}
+      <div style={{ height: 420, overflow: "scroll" }}>
         {messages.map((message) => (
           <Box
             sx={{
@@ -76,6 +80,23 @@ function ChatBox() {
             </p>
           </Box>
         ))}
+      </div>
+
+      {/* Input pesan */}
+      <div style={{ width: "97%", display: "flex", margin: "10px auto" }}>
+        <TextField
+          value={messageBody}
+          sx={{ width: "80%" }}
+          variant="outlined"
+          onChange={(e) => setMessageBody(e.target.value)}
+        />
+        <Button
+          onClick={onSendMessage}
+          sx={{ width: "20%", height: 56 }}
+          variant="outlined"
+        >
+          Send
+        </Button>
       </div>
     </Box>
   );
